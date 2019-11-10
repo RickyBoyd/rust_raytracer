@@ -41,8 +41,8 @@ fn main() {
                     intersectionIndex = Some(i);
                 }
             }
-        }
-        //let mut fragment = glm::vec3(x, y, 0.0);
+		}
+
         let color = if let Some(index) = intersectionIndex {
             scene[index].color
         } else {
@@ -52,7 +52,6 @@ fn main() {
         *pixel = image::Rgba([
             (color.x * 255.0) as u8,
             (color.y * 255.0) as u8,
-            //y as u8 % 255,
             (color.z * 255.0) as u8,
             255,
         ]);
