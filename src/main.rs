@@ -24,22 +24,26 @@ fn main() {
         .unwrap_or_else(|_e| { panic!("Could not create window!")});
 
     for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
-        let world_space_position = glm::vec2(x as f32 / WIDTH as f32, y as f32 / WIDTH as f32);
+        //let world_space_position = glm::vec2(x as f32 / WIDTH as f32, y as f32 / WIDTH as f32);
 
-        let u = (x as f32 - WIDTH as f32) as f32 / 2.0;
-		let v = (HEIGHT as f32 - y as f32) as f32 - HEIGHT as f32 / 2.0;
-		let d = glm::vec3(u, v, FOCAL_LENGTH);
+       // let u = (x as f32 - WIDTH as f32) as f32 / 2.0;
+		// let v = (HEIGHT as f32 - y as f32) as f32 - HEIGHT as f32 / 2.0;
+
+		let u = (x as f32 + 0.5) / WIDTH as f32 * 2.0 - 1.0 as f32;
+		let v = 1.0 - 2.0 * (y as f32 + 0.5) / HEIGHT as f32;
+
+		let d = glm::normalize::<f32, glm::U3>(&glm::vec3(u, v, 1.0));
 
         let mut current_intersection = Intersection{
             position: glm::vec3(0.0, 0.0, 0.0),
-            distance: std::f32::MAX, 
+            distance: std::f32::MAX,
         };
         let mut intersectionIndex: Option<usize> = None;
         for (i, t) in scene.iter().enumerate() {
             if let Some(intersection) = ray_intersects_triangle(camera_pos, d, t) {
                 if intersection.distance < current_intersection.distance {
                     current_intersection = intersection;
-                    //println!("intersection with {:?} for px {} {} dist: {}!", t, x, y, current_intersection.distance);
+                    println!("intersection with {}!", i);
                     intersectionIndex = Some(i);
                 }
             }
@@ -82,8 +86,8 @@ struct Intersection {
 }
 
 fn ray_intersects_triangle(ray_origin: glm::Vec3, 
-                          ray_vector: glm::Vec3, 
-                          triangle: &Triangle) -> Option<Intersection> {
+                           ray_vector: glm::Vec3, 
+                           triangle: &Triangle) -> Option<Intersection> {
     let edge1 = triangle.v1 - triangle.v0;
     let edge2 = triangle.v2 - triangle.v0;
     let h = glm::cross::<f32, glm::U3>(&ray_vector, &edge2);
