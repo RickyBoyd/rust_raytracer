@@ -8,7 +8,6 @@ use piston_window::EventLoop;
 
 const WIDTH: u32 = 500;
 const HEIGHT: u32 = 500;
-const FOCAL_LENGTH: f32 = 250.0;
 const EPSILON: f32 = 0.0000001;
 
 fn main() {
@@ -24,15 +23,10 @@ fn main() {
         .unwrap_or_else(|_e| { panic!("Could not create window!")});
 
     for (x, y, pixel) in frame_buffer.enumerate_pixels_mut() {
-        //let world_space_position = glm::vec2(x as f32 / WIDTH as f32, y as f32 / WIDTH as f32);
-
-       // let u = (x as f32 - WIDTH as f32) as f32 / 2.0;
-		// let v = (HEIGHT as f32 - y as f32) as f32 - HEIGHT as f32 / 2.0;
-
 		let u = (x as f32 + 0.5) / WIDTH as f32 * 2.0 - 1.0 as f32;
 		let v = 1.0 - 2.0 * (y as f32 + 0.5) / HEIGHT as f32;
 
-		let d = glm::normalize::<f32, glm::U3>(&glm::vec3(u, v, 1.0));
+		let ray_dir = glm::normalize::<f32, glm::U3>(&glm::vec3(u, v, 1.0));
 
         let mut current_intersection = Intersection{
             position: glm::vec3(0.0, 0.0, 0.0),
@@ -40,7 +34,7 @@ fn main() {
         };
         let mut intersectionIndex: Option<usize> = None;
         for (i, t) in scene.iter().enumerate() {
-            if let Some(intersection) = ray_intersects_triangle(camera_pos, d, t) {
+            if let Some(intersection) = ray_intersects_triangle(camera_pos, ray_dir, t) {
                 if intersection.distance < current_intersection.distance {
                     current_intersection = intersection;
                     println!("intersection with {}!", i);
