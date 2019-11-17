@@ -11,8 +11,8 @@ const HEIGHT: u32 = 500;
 const EPSILON: f32 = 0.0000001;
 
 fn main() {
-    let scene = load_cornell_box();
-    let camera_pos = glm::vec3(0.0, 0.0, -2.0);
+	let scene = load_cornell_box_scene();
+	let camera_pos = glm::vec3(0.0, 0.0, -2.0);
 
     let mut frame_buffer = image::ImageBuffer::from_pixel(WIDTH, HEIGHT, image::Rgba([0,0,0,255]));
 
@@ -33,18 +33,17 @@ fn main() {
             distance: std::f32::MAX,
         };
         let mut intersectionIndex: Option<usize> = None;
-        for (i, t) in scene.iter().enumerate() {
+        for (i, t) in scene.triangles.iter().enumerate() {
             if let Some(intersection) = ray_intersects_triangle(camera_pos, ray_dir, t) {
                 if intersection.distance < current_intersection.distance {
                     current_intersection = intersection;
-                    println!("intersection with {}!", i);
                     intersectionIndex = Some(i);
                 }
             }
 		}
 
         let color = if let Some(index) = intersectionIndex {
-            scene[index].color
+            scene.triangles[index].color
         } else {
             glm::vec3(0.0, 0.0, 0.0)
         };
@@ -108,6 +107,27 @@ fn ray_intersects_triangle(ray_origin: glm::Vec3,
             });
     }
     return None;
+}
+
+struct Scene {
+	pub lights: Vec<PointLight>,
+	pub triangles: Vec<Triangle>,
+}
+
+fn load_cornell_box_scene() -> Scene {
+	let triangles = load_cornell_box();
+	Scene{
+		triangles: triangles,
+		lights: vec![PointLight{
+			color: glm::vec3(1.0, 1.0, 1.0),
+			position: glm::vec3(-0.3, 0.5, -0.7)
+		}]
+	}
+}
+
+struct PointLight {
+	position: glm::Vec3,
+	color: glm::Vec3,
 }
 
 // Used to describe a triangular surface
