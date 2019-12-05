@@ -14,7 +14,8 @@ pub fn load_cornell_box_scene() -> Scene {
 		triangles: triangles,
 		lights: vec![light::PointLight{
 			color: glm::vec3(1.0, 1.0, 1.0),
-			position: glm::vec3(-0.3, 0.5, -0.7)
+            position: glm::vec3(-0.3, 0.5, -0.7),
+            intensity: 2.0
 		}]
 	}
 }

@@ -6,6 +6,8 @@ extern crate nalgebra_glm as glm;
 
 use piston_window::EventLoop;
 
+use std::f32;
+
 mod light;
 mod triangle;
 mod scene;
@@ -120,7 +122,5 @@ fn ray_intersects_triangle(ray_origin: &glm::Vec3,
 
 fn shade(intersection: &Intersection, triangle: &triangle::Triangle, light: &light::PointLight, ray_dir: &glm::Vec3) -> glm::Vec3 {
 	let shade = glm::dot(&triangle.normal, &(-ray_dir));
-	let color = (shade).max(0.0);
-	println!("shade {}", shade);
-	glm::vec3(color, color, color)
+	0.18 / std::f32::consts::PI * light.color * light.intensity * (shade).max(0.0)
 }
